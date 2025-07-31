@@ -1,15 +1,15 @@
 import tkinter as tk
 import math
-print ("Palash Jaiswal")
-name = "Scientific Calculator"
-print(name)
-b = 10 
-b = "Palash"
-a = 30
-d = 2.001
-c = str (a + d) + b
-print (c)
-print ("TESTER")
+# print ("Palash Jaiswal")
+# name = "Scientific Calculator"
+# print(name)
+# b = 10 
+# b = "Palash"
+# a = 30
+# d = 2.001
+# c = str (a + d) + b
+# print (c)
+# print ("TESTER")
 class ScientificCalculator:
     def __init__(self, master):
         self.master = master
