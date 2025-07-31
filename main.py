@@ -80,7 +80,7 @@ class ScientificCalculator:
             btns_frame.grid_rowconfigure(i, weight=1)
 
     def create_button(self, frame, text, row, col, command, colspan=1, rowspan=1, bg="#34495e", fg="#ecf0f1"):
-        action = lambda: command(text) if command in [self.btn_click, self.scientific_operation] else command
+        action = lambda: command() if command not in [self.btn_click, self.scientific_operation] else command(text)
         button = tk.Button(frame, text=text, font=('arial', 12, 'bold'), bd=0, bg=bg, fg=fg, command=action)
         button.grid(row=row, column=col, columnspan=colspan, rowspan=rowspan, padx=1, pady=1, sticky="nsew")
 
