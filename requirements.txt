@@ -1,0 +1,3 @@
+# Requirements for this folder's script only
+# Target file: new.py
+geonamescache
