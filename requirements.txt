@@ -1,3 +1,8 @@
-# Requirements for this folder's script only
-# Target file: new.py
+# Canonical requirements for scripts in this Test folder
+#
+# new.py dependencies
 geonamescache
+#
+# danger.py dependencies
+# - No external pip packages required (uses standard library: tkinter, random, datetime)
+# - Linux may need system package: python3-tk
