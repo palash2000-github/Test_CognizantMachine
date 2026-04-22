@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Resume Dashboard</title>
+<style>
+/* ── Reset & Base ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#000;--surface:#111;--card:#1a1a1a;--card-hover:#222;
+  --accent:#2997ff;--accent2:#bf5af2;--accent3:#30d158;--accent4:#ff9f0a;
+  --text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;
+  --radius:20px;--radius-sm:12px;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;
+  --transition:0.4s cubic-bezier(.25,.46,.45,.94);
+}
+html{scroll-behavior:smooth;font-family:var(--font);background:var(--bg);color:var(--text)}
+body{overflow-x:hidden;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+
+/* ── Admin Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);
+  display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;
+  pointer-events:none;transition:opacity .3s}
+.modal-overlay.active{opacity:1;pointer-events:all}
+.modal-box{background:var(--surface);border:1px solid #333;border-radius:var(--radius);
+  padding:48px;max-width:420px;width:90%;text-align:center;
+  transform:scale(.9) translateY(20px);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.modal-overlay.active .modal-box{transform:scale(1) translateY(0)}
+.modal-box h2{font-size:1.6rem;margin-bottom:8px}
+.modal-box p{color:var(--text2);margin-bottom:24px;font-size:.95rem}
+.modal-box input{width:100%;padding:14px 18px;border-radius:var(--radius-sm);border:1px solid #333;
+  background:#0a0a0a;color:var(--text);font-size:1rem;outline:none;transition:border .3s}
+.modal-box input:focus{border-color:var(--accent)}
+.modal-box .btn-row{display:flex;gap:12px;margin-top:20px}
+.modal-box button{flex:1;padding:12px;border:none;border-radius:var(--radius-sm);
+  font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s}
+.modal-box .btn-primary{background:var(--accent);color:#fff}
+.modal-box .btn-primary:hover{background:#1a8aff}
+.modal-box .btn-secondary{background:#222;color:var(--text2);border:1px solid #333}
+.modal-box .btn-secondary:hover{background:#2a2a2a}
+.modal-box .error{color:#ff453a;font-size:.85rem;margin-top:12px;min-height:20px}
+
+/* ── Navbar ── */
+nav{position:fixed;top:0;width:100%;z-index:1000;
+  background:rgba(0,0,0,.72);backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.08)}
+nav .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;
+  justify-content:space-between;padding:0 24px;height:52px}
+nav .logo{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
+nav .logo span{background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav ul{display:flex;gap:28px;list-style:none}
+nav ul li a{color:var(--text2);font-size:.85rem;font-weight:500;transition:color .3s;
+  position:relative}
+nav ul li a:hover,nav ul li a.active{color:var(--text)}
+nav ul li a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;
+  background:var(--accent);transition:width .3s}
+nav ul li a:hover::after,nav ul li a.active::after{width:100%}
+.nav-actions{display:flex;gap:12px;align-items:center}
+.nav-actions button{background:none;border:1px solid #444;color:var(--text2);
+  padding:6px 16px;border-radius:20px;font-size:.8rem;cursor:pointer;transition:all .3s}
+.nav-actions button:hover{border-color:var(--accent);color:var(--accent)}
+.nav-actions .admin-badge{background:var(--accent);color:#fff;border:none;
+  padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:600;
+  animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* ── Hero ── */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(41,151,255,.15),transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);animation:heroGlow 6s ease-in-out infinite}
+@keyframes heroGlow{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}}
+.hero-content{position:relative;z-index:1}
+.hero .greeting{font-size:1.1rem;color:var(--accent);font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:16px;opacity:0;animation:fadeUp .8s .2s forwards}
+.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:700;letter-spacing:-.04em;
+  line-height:1.05;margin-bottom:20px;opacity:0;animation:fadeUp .8s .4s forwards}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent4));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;
+  animation:gradientShift 4s ease infinite}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero .tagline{font-size:clamp(1.1rem,2.5vw,1.5rem);color:var(--text2);max-width:640px;
+  margin:0 auto 40px;line-height:1.5;opacity:0;animation:fadeUp .8s .6s forwards}
+.hero .cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  opacity:0;animation:fadeUp .8s .8s forwards}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:980px;
+  font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s;border:none}
+.btn-filled{background:var(--accent);color:#fff}
+.btn-filled:hover{background:#1a8aff;transform:scale(1.04)}
+.btn-outline{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn-outline:hover{background:rgba(41,151,255,.1);transform:scale(1.04)}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+[style*="animation:fadeUp"]{transform:translateY(30px)}
+.hero .greeting,.hero h1,.hero .tagline,.hero .cta-row{transform:translateY(30px)}
+
+/* ── Sections ── */
+section{padding:100px 24px;max-width:1200px;margin:0 auto}
+.section-label{font-size:.85rem;color:var(--accent);font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-.03em;margin-bottom:16px}
+.section-subtitle{color:var(--text2);font-size:1.1rem;max-width:600px;margin-bottom:56px;line-height:1.6}
+
+/* ── Reveal Animation ── */
+.reveal{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.25,.46,.45,.94)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── Skills Grid ── */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.skill-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);
+  padding:32px;cursor:default;transition:all var(--transition);position:relative;overflow:hidden}
+.skill-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(600px circle at var(--mx) var(--my),rgba(41,151,255,.06),transparent 40%);
+  opacity:0;transition:opacity .3s}
+.skill-card:hover::before{opacity:1}
+.skill-card:hover{border-color:rgba(41,151,255,.2);transform:translateY(-4px)}
+.skill-card .icon{width:48px;height:48px;border-radius:var(--radius-sm);display:flex;
+  align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;
+  transition:transform .3s}
+.skill-card:hover .icon{transform:scale(1.1) rotate(-3deg)}
+.skill-card h3{font-size:1.15rem;margin-bottom:8px;font-weight:600}
+.skill-card p{color:var(--text2);font-size:.9rem;line-height:1.5;margin-bottom:16px}
+.skill-bar{height:4px;background:#2a2a2a;border-radius:2px;overflow:hidden}
+.skill-bar-fill{height:100%;border-radius:2px;width:0;transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
+.skill-level{display:flex;justify-content:space-between;margin-top:8px}
+.skill-level span{font-size:.75rem;color:var(--text3)}
+
+/* Editable state */
+.editable .skill-card{cursor:pointer;position:relative}
+.editable .skill-card::after{content:'✏️';position:absolute;top:12px;right:12px;
+  font-size:.9rem;opacity:0;transition:opacity .3s}
+.editable .skill-card:hover::after{opacity:1}
+
+/* ── Experience Timeline ── */
+.timeline{position:relative;padding-left:40px}
+.timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--accent),var(--accent2),var(--accent3))}
+.timeline-item{position:relative;margin-bottom:48px;padding:28px 32px;
+  background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);
+  transition:all var(--transition)}
+.timeline-item:hover{border-color:rgba(41,151,255,.2);transform:translateX(8px)}
+.timeline-item::before{content:'';position:absolute;left:-33px;top:34px;width:12px;height:12px;
+  border-radius:50%;background:var(--accent);border:3px solid var(--bg);transition:transform .3s}
+.timeline-item:hover::before{transform:scale(1.3)}
+.timeline-item .period{font-size:.8rem;color:var(--accent);font-weight:600;margin-bottom:8px}
+.timeline-item h3{font-size:1.15rem;margin-bottom:4px}
+.timeline-item .company{color:var(--text2);font-size:.95rem;margin-bottom:12px}
+.timeline-item p{color:var(--text3);font-size:.9rem;line-height:1.6}
+
+/* ── Projects ── */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px}
+.project-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);
+  overflow:hidden;transition:all var(--transition)}
+.project-card:hover{border-color:rgba(191,90,242,.3);transform:translateY(-6px)}
+.project-card .project-visual{height:180px;display:flex;align-items:center;justify-content:center;
+  font-size:3rem;position:relative;overflow:hidden}
+.project-card .project-visual::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 60%,var(--card));pointer-events:none}
+.project-card .project-body{padding:24px}
+.project-card h3{font-size:1.1rem;margin-bottom:8px}
+.project-card p{color:var(--text2);font-size:.9rem;line-height:1.5;margin-bottom:16px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;
+  background:rgba(41,151,255,.1);color:var(--accent)}
+.tag.purple{background:rgba(191,90,242,.1);color:var(--accent2)}
+.tag.green{background:rgba(48,209,88,.1);color:var(--accent3)}
+.tag.orange{background:rgba(255,159,10,.1);color:var(--accent4)}
+
+/* ── Contact ── */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.contact-card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);
+  padding:28px;text-align:center;transition:all var(--transition)}
+.contact-card:hover{border-color:rgba(48,209,88,.3);transform:translateY(-4px)}
+.contact-card .contact-icon{font-size:2rem;margin-bottom:16px}
+.contact-card h3{font-size:1rem;margin-bottom:6px}
+.contact-card p{color:var(--text2);font-size:.9rem}
+.contact-card a{color:var(--accent);font-size:.9rem}
+
+/* ── Inline Editor ── */
+.inline-edit{background:rgba(41,151,255,.08);border:1px solid var(--accent);border-radius:8px;
+  padding:8px 12px;color:var(--text);font-family:var(--font);font-size:inherit;width:100%;
+  outline:none;resize:vertical;min-height:1.8em}
+.add-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
+  border-radius:var(--radius-sm);border:1.5px dashed #444;color:var(--text3);
+  background:transparent;cursor:pointer;font-size:.85rem;transition:all .3s;margin-top:16px}
+.add-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Footer ── */
+footer{text-align:center;padding:48px 24px;border-top:1px solid rgba(255,255,255,.06)}
+footer p{color:var(--text3);font-size:.85rem}
+
+/* ── Floating Particles ── */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;border-radius:50%;opacity:.15;animation:float linear infinite}
+@keyframes float{0%{transform:translateY(100vh) rotate(0deg)}100%{transform:translateY(-100px) rotate(720deg)}}
+
+/* ── Mobile ── */
+@media(max-width:768px){
+  nav ul{display:none}
+  .hero h1{font-size:2.4rem}
+  .skills-grid,.projects-grid,.contact-grid{grid-template-columns:1fr}
+  section{padding:60px 16px}
+  .timeline{padding-left:28px}
+  .timeline-item{padding:20px}
+}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--surface);border:1px solid #333;border-radius:var(--radius-sm);
+  padding:14px 28px;font-size:.9rem;z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Admin Modal -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-box">
+    <h2>🔐 Admin Access</h2>
+    <p>Enter the admin password to unlock edit mode.</p>
+    <input type="password" id="adminPwd" placeholder="Password" autocomplete="off">
+    <div class="error" id="pwdError"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="checkPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Navbar -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span>Portfolio</span></div>
+    <ul>
+      <li><a href="#hero" class="active">Home</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button id="adminBtn" onclick="openModal()">🔒 Admin</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <p class="greeting">Hello, World 👋</p>
+    <h1><span class="gradient editable-text" data-field="name">Your Name</span></h1>
+    <p class="tagline editable-text" data-field="tagline">Full-Stack Developer · UI/UX Enthusiast · Problem Solver</p>
+    <div class="cta-row">
+      <a href="#skills" class="btn btn-filled">Explore Skills ↓</a>
+      <a href="#contact" class="btn btn-outline">Get in Touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="reveal">
+    <p class="section-label">Expertise</p>
+    <h2 class="section-title">Skills & Technologies</h2>
+    <p class="section-subtitle">A curated set of tools and technologies I use to build modern, performant solutions.</p>
+  </div>
+  <div class="skills-grid" id="skillsGrid">
+    <!-- Cards injected by JS -->
+  </div>
+  <button class="add-btn admin-only" style="display:none" onclick="addSkill()">+ Add Skill</button>
+</section>
+
+<!-- Experience -->
+<section id="experience">
+  <div class="reveal">
+    <p class="section-label">Journey</p>
+    <h2 class="section-title">Experience</h2>
+    <p class="section-subtitle">Key roles and milestones that shaped my professional path.</p>
+  </div>
+  <div class="timeline" id="timeline">
+    <!-- Items injected by JS -->
+  </div>
+  <button class="add-btn admin-only" style="display:none" onclick="addExperience()">+ Add Experience</button>
+</section>
+
+<!-- Projects -->
+<section id="projects">
+  <div class="reveal">
+    <p class="section-label">Work</p>
+    <h2 class="section-title">Featured Projects</h2>
+    <p class="section-subtitle">Highlights from personal and professional projects.</p>
+  </div>
+  <div class="projects-grid" id="projectsGrid">
+    <!-- Cards injected by JS -->
+  </div>
+  <button class="add-btn admin-only" style="display:none" onclick="addProject()">+ Add Project</button>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="reveal">
+    <p class="section-label">Connect</p>
+    <h2 class="section-title">Get in Touch</h2>
+    <p class="section-subtitle">Feel free to reach out for collaborations or just a friendly hello.</p>
+  </div>
+  <div class="contact-grid" id="contactGrid">
+    <!-- Cards injected by JS -->
+  </div>
+</section>
+
+<footer>
+  <p>Designed with care · Built with passion · © <span id="footerYear"></span></p>
+</footer>
+
+<script>
+/* ──────────────── CONFIG ──────────────── */
+const ADMIN_PASSWORD = "admin123";   // Change this!
+let isAdmin = false;
+
+/* ──────────────── DATA (localStorage-backed) ──────────────── */
+const DEFAULT_DATA = {
+  name: "Your Name",
+  tagline: "Full-Stack Developer · UI/UX Enthusiast · Problem Solver",
+  skills: [
+    { icon:"💻", title:"Python", desc:"Automation, data analysis, web backends, scripting.", level:90, color:"var(--accent)" },
+    { icon:"⚛️", title:"React / Next.js", desc:"Component-driven SPAs and SSR apps.", level:82, color:"var(--accent2)" },
+    { icon:"🎨", title:"UI / UX Design", desc:"Figma, prototyping, design systems.", level:78, color:"var(--accent4)" },
+    { icon:"🗄️", title:"Databases", desc:"PostgreSQL, MongoDB, Redis caching.", level:85, color:"var(--accent3)" },
+    { icon:"☁️", title:"Cloud & DevOps", desc:"AWS, Docker, CI/CD pipelines.", level:75, color:"var(--accent)" },
+    { icon:"🔒", title:"Security", desc:"OWASP, auth flows, secure coding.", level:70, color:"var(--accent2)" },
+  ],
+  experience: [
+    { period:"2023 – Present", role:"Senior Developer", company:"Tech Corp", desc:"Leading front-end architecture and mentoring junior developers on best practices." },
+    { period:"2021 – 2023", role:"Full-Stack Developer", company:"StartupXYZ", desc:"Built end-to-end features for a SaaS platform serving 50k+ users." },
+    { period:"2019 – 2021", role:"Junior Developer", company:"Agency Co.", desc:"Developed responsive web apps and contributed to design system components." },
+  ],
+  projects: [
+    { emoji:"🥠", title:"Fortune Cookie Oracle", desc:"Interactive Tkinter GUI that gives birthday-based fortune cookie messages.", tags:[{t:"Python",c:""},{t:"Tkinter",c:"purple"},{t:"Fun",c:"orange"}] },
+    { emoji:"🌍", title:"GeoSearch", desc:"World countries and cities finder powered by geonamescache.", tags:[{t:"Python",c:""},{t:"CLI",c:"green"},{t:"Data",c:"purple"}] },
+    { emoji:"🧩", title:"Word Puzzle Game", desc:"Terminal word game with retained letter hints and full-word guesses.", tags:[{t:"Python",c:""},{t:"Game",c:"orange"},{t:"Interactive",c:"green"}] },
+  ],
+  contacts: [
+    { icon:"📧", title:"Email", value:"your.email@example.com", link:"mailto:your.email@example.com" },
+    { icon:"💼", title:"LinkedIn", value:"linkedin.com/in/yourname", link:"https://linkedin.com" },
+    { icon:"🐙", title:"GitHub", value:"github.com/yourname", link:"https://github.com" },
+    { icon:"🌐", title:"Portfolio", value:"yourwebsite.com", link:"#" },
+  ]
+};
+
+function loadData(){ try{ return JSON.parse(localStorage.getItem("resumeData")) || structuredClone(DEFAULT_DATA) }catch(e){ return structuredClone(DEFAULT_DATA) } }
+function saveData(d){ localStorage.setItem("resumeData",JSON.stringify(d)) }
+let DATA = loadData();
+
+/* ──────────────── RENDER ──────────────── */
+function renderAll(){
+  document.querySelector('[data-field="name"]').textContent = DATA.name;
+  document.querySelector('[data-field="tagline"]').textContent = DATA.tagline;
+  renderSkills(); renderExperience(); renderProjects(); renderContacts();
+  document.getElementById("footerYear").textContent = new Date().getFullYear();
+  updateAdminUI();
+}
+
+function renderSkills(){
+  const g = document.getElementById("skillsGrid"); g.innerHTML = "";
+  DATA.skills.forEach((s,i)=>{
+    const card = document.createElement("div");
+    card.className = "skill-card reveal";
+    card.innerHTML = `
+      <div class="icon" style="background:${s.color}22;color:${s.color}">${s.icon}</div>
+      <h3>${esc(s.title)}</h3>
+      <p>${esc(s.desc)}</p>
+      <div class="skill-bar"><div class="skill-bar-fill" style="background:${s.color}" data-level="${s.level}"></div></div>
+      <div class="skill-level"><span>${esc(s.title)}</span><span>${s.level}%</span></div>
+      ${isAdmin ? `<button onclick="deleteSkill(${i})" style="position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;font-size:.9rem;opacity:.5" title="Delete">🗑️</button>` : ""}`;
+    if(isAdmin) card.addEventListener("dblclick",()=>editSkill(i));
+    card.addEventListener("mousemove",e=>{ const r=card.getBoundingClientRect(); card.style.setProperty("--mx",(e.clientX-r.left)+"px"); card.style.setProperty("--my",(e.clientY-r.top)+"px"); });
+    g.appendChild(card);
+  });
+  setTimeout(()=>{ document.querySelectorAll(".skill-bar-fill").forEach(b=>b.style.width=b.dataset.level+"%"); observeReveals(); },100);
+}
+
+function renderExperience(){
+  const t = document.getElementById("timeline"); t.innerHTML="";
+  DATA.experience.forEach((x,i)=>{
+    const d = document.createElement("div");
+    d.className = "timeline-item reveal";
+    d.innerHTML = `<div class="period">${esc(x.period)}</div><h3>${esc(x.role)}</h3><div class="company">${esc(x.company)}</div><p>${esc(x.desc)}</p>
+      ${isAdmin?`<button onclick="deleteExperience(${i})" style="position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;font-size:.9rem;opacity:.5" title="Delete">🗑️</button>`:""}`;
+    if(isAdmin) d.addEventListener("dblclick",()=>editExperience(i));
+    t.appendChild(d);
+  });
+  observeReveals();
+}
+
+function renderProjects(){
+  const g = document.getElementById("projectsGrid"); g.innerHTML="";
+  const gradients = [
+    "linear-gradient(135deg,#1a1a2e,#16213e)",
+    "linear-gradient(135deg,#1a1a1a,#2d1b4e)",
+    "linear-gradient(135deg,#0a1a0a,#1a2e1a)",
+  ];
+  DATA.projects.forEach((p,i)=>{
+    const c = document.createElement("div");
+    c.className = "project-card reveal";
+    c.innerHTML = `
+      <div class="project-visual" style="background:${gradients[i%gradients.length]}">${p.emoji}</div>
+      <div class="project-body">
+        <h3>${esc(p.title)}</h3><p>${esc(p.desc)}</p>
+        <div class="tags">${p.tags.map(t=>`<span class="tag ${t.c}">${esc(t.t)}</span>`).join("")}</div>
+      </div>
+      ${isAdmin?`<button onclick="deleteProject(${i})" style="position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;font-size:.9rem;opacity:.5;z-index:2" title="Delete">🗑️</button>`:""}`;
+    if(isAdmin) c.addEventListener("dblclick",()=>editProject(i));
+    g.appendChild(c);
+  });
+  observeReveals();
+}
+
+function renderContacts(){
+  const g = document.getElementById("contactGrid"); g.innerHTML="";
+  DATA.contacts.forEach((c,i)=>{
+    const d = document.createElement("div");
+    d.className = "contact-card reveal";
+    d.innerHTML = `<div class="contact-icon">${c.icon}</div><h3>${esc(c.title)}</h3><p>${esc(c.value)}</p><a href="${esc(c.link)}" target="_blank">Open →</a>`;
+    if(isAdmin) d.addEventListener("dblclick",()=>editContact(i));
+    g.appendChild(d);
+  });
+  observeReveals();
+}
+
+/* ──────────────── ADMIN AUTH ──────────────── */
+function openModal(){ document.getElementById("adminModal").classList.add("active"); document.getElementById("adminPwd").focus(); document.getElementById("adminPwd").value=""; document.getElementById("pwdError").textContent=""; }
+function closeModal(){ document.getElementById("adminModal").classList.remove("active"); }
+
+function checkPassword(){
+  const pwd = document.getElementById("adminPwd").value;
+  if(pwd===ADMIN_PASSWORD){ isAdmin=true; closeModal(); renderAll(); toast("🔓 Admin mode unlocked — double-click any card to edit"); }
+  else{ document.getElementById("pwdError").textContent="Incorrect password. Try again."; document.getElementById("adminPwd").value=""; }
+}
+document.getElementById("adminPwd").addEventListener("keydown",e=>{ if(e.key==="Enter") checkPassword(); });
+
+function logoutAdmin(){ isAdmin=false; renderAll(); toast("🔒 Logged out of admin mode"); }
+
+function updateAdminUI(){
+  const btn = document.getElementById("adminBtn");
+  if(isAdmin){
+    btn.innerHTML = "🔓 Admin";
+    btn.className = "admin-badge";
+    btn.onclick = logoutAdmin;
+    document.querySelectorAll(".admin-only").forEach(el=>el.style.display="inline-flex");
+    document.getElementById("skillsGrid").classList.add("editable");
+  } else {
+    btn.innerHTML = "🔒 Admin";
+    btn.className = "";
+    btn.onclick = openModal;
+    document.querySelectorAll(".admin-only").forEach(el=>el.style.display="none");
+    document.getElementById("skillsGrid").classList.remove("editable");
+  }
+}
+
+/* ──────────────── INLINE EDITING ──────────────── */
+function editSkill(i){
+  if(!isAdmin) return;
+  const s=DATA.skills[i];
+  const v=prompt("Skill title:",s.title); if(v===null) return; s.title=v;
+  const d=prompt("Description:",s.desc); if(d!==null) s.desc=d;
+  const l=prompt("Level (0-100):",s.level); if(l!==null) s.level=Math.min(100,Math.max(0,parseInt(l)||0));
+  saveData(DATA); renderSkills(); toast("✅ Skill updated");
+}
+function addSkill(){
+  const t=prompt("Skill title:"); if(!t) return;
+  const d=prompt("Description:",""); const l=parseInt(prompt("Level (0-100):","75"))||75;
+  const icons=["🚀","🧠","📊","🛠️","🔧","⚙️","📱","🤖"];
+  DATA.skills.push({icon:icons[Math.floor(Math.random()*icons.length)],title:t,desc:d||"",level:Math.min(100,Math.max(0,l)),color:"var(--accent)"});
+  saveData(DATA); renderSkills(); toast("✅ Skill added");
+}
+function deleteSkill(i){ if(confirm("Delete this skill?")){ DATA.skills.splice(i,1); saveData(DATA); renderSkills(); toast("🗑️ Skill removed"); } }
+
+function editExperience(i){
+  if(!isAdmin) return;
+  const x=DATA.experience[i];
+  const p=prompt("Period:",x.period); if(p!==null) x.period=p;
+  const r=prompt("Role:",x.role); if(r!==null) x.role=r;
+  const c=prompt("Company:",x.company); if(c!==null) x.company=c;
+  const d=prompt("Description:",x.desc); if(d!==null) x.desc=d;
+  saveData(DATA); renderExperience(); toast("✅ Experience updated");
+}
+function addExperience(){
+  const r=prompt("Role:"); if(!r) return;
+  const c=prompt("Company:",""); const p=prompt("Period:",""); const d=prompt("Description:","");
+  DATA.experience.unshift({period:p||"Present",role:r,company:c||"",desc:d||""});
+  saveData(DATA); renderExperience(); toast("✅ Experience added");
+}
+function deleteExperience(i){ if(confirm("Delete?")){ DATA.experience.splice(i,1); saveData(DATA); renderExperience(); toast("🗑️ Removed"); } }
+
+function editProject(i){
+  if(!isAdmin) return;
+  const p=DATA.projects[i];
+  const t=prompt("Title:",p.title); if(t!==null) p.title=t;
+  const d=prompt("Description:",p.desc); if(d!==null) p.desc=d;
+  saveData(DATA); renderProjects(); toast("✅ Project updated");
+}
+function addProject(){
+  const t=prompt("Project title:"); if(!t) return;
+  const d=prompt("Description:",""); const e=prompt("Emoji icon:","🚀");
+  DATA.projects.push({emoji:e||"🚀",title:t,desc:d||"",tags:[{t:"New",c:"green"}]});
+  saveData(DATA); renderProjects(); toast("✅ Project added");
+}
+function deleteProject(i){ if(confirm("Delete?")){ DATA.projects.splice(i,1); saveData(DATA); renderProjects(); toast("🗑️ Removed"); } }
+
+function editContact(i){
+  if(!isAdmin) return;
+  const c=DATA.contacts[i];
+  const t=prompt("Title:",c.title); if(t!==null) c.title=t;
+  const v=prompt("Value:",c.value); if(v!==null) c.value=v;
+  const l=prompt("Link URL:",c.link); if(l!==null) c.link=l;
+  saveData(DATA); renderContacts(); toast("✅ Contact updated");
+}
+
+/* ──────────────── UTILITIES ──────────────── */
+function esc(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+function toast(msg){
+  const t=document.getElementById("toast"); t.innerHTML=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+/* ──────────────── SCROLL REVEAL ──────────────── */
+function observeReveals(){
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("visible"); obs.unobserve(e.target); }});
+  },{threshold:0.1});
+  document.querySelectorAll(".reveal:not(.visible)").forEach(el=>obs.observe(el));
+}
+
+/* ──────────────── ACTIVE NAV ──────────────── */
+function setupNavHighlight(){
+  const links = document.querySelectorAll("nav ul li a");
+  const sections = [...links].map(l=>document.querySelector(l.getAttribute("href")));
+  window.addEventListener("scroll",()=>{
+    let current = "";
+    sections.forEach(s=>{ if(s && window.scrollY >= s.offsetTop - 120) current = s.id; });
+    links.forEach(l=>{ l.classList.toggle("active", l.getAttribute("href")==="#"+current); });
+  });
+}
+
+/* ──────────────── PARTICLES ──────────────── */
+function createParticles(){
+  const c = document.getElementById("particles");
+  const colors = ["var(--accent)","var(--accent2)","var(--accent3)","var(--accent4)"];
+  for(let i=0;i<30;i++){
+    const p = document.createElement("div");
+    p.className = "particle";
+    const size = Math.random()*4+2;
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;
+      background:${colors[i%colors.length]};animation-duration:${Math.random()*20+15}s;
+      animation-delay:${Math.random()*20}s`;
+    c.appendChild(p);
+  }
+}
+
+/* ──────────────── INIT ──────────────── */
+document.addEventListener("DOMContentLoaded",()=>{
+  renderAll(); setupNavHighlight(); createParticles(); observeReveals();
+});
+</script>
+</body>
+</html>
