@@ -1,7 +1,0 @@
-print ("github direct file")
-print ("new commit test")
-print ("tester")
-print ("New -branching test")
-print ("Switch & New Commit")
-print ("James Bond")
-print ("Manual chnages in github")
