@@ -1,0 +1,532 @@
+{
+  "meta": {
+    "project": "Sample Requirements",
+    "generated_at": "2026-08-20T13:57:41.868298",
+    "generator": "Requirement Analyzer v1.0",
+    "total_requirements": 15,
+    "quality_score": 88.8
+  },
+  "analysis": {
+    "category_distribution": {
+      "functional": 11,
+      "data": 1,
+      "ui/ux": 1,
+      "testing": 1,
+      "non-functional": 1
+    },
+    "priority_distribution": {
+      "critical": 8,
+      "high": 6,
+      "medium": 1
+    },
+    "complexity_distribution": {
+      "high": 7,
+      "medium": 7,
+      "low": 1
+    },
+    "estimated_story_points": 78,
+    "missing_areas": [
+      "data validation",
+      "backup/recovery",
+      "accessibility"
+    ],
+    "top_keywords": [
+      [
+        "test",
+        8
+      ],
+      [
+        "system",
+        5
+      ],
+      [
+        "users",
+        3
+      ],
+      [
+        "cases",
+        3
+      ],
+      [
+        "allow",
+        2
+      ],
+      [
+        "email",
+        2
+      ],
+      [
+        "able",
+        2
+      ],
+      [
+        "using",
+        2
+      ],
+      [
+        "admin",
+        2
+      ],
+      [
+        "time",
+        2
+      ],
+      [
+        "support",
+        2
+      ],
+      [
+        "api",
+        2
+      ],
+      [
+        "execution",
+        2
+      ],
+      [
+        "register",
+        1
+      ],
+      [
+        "password",
+        1
+      ],
+      [
+        "login",
+        1
+      ],
+      [
+        "sso",
+        1
+      ],
+      [
+        "google",
+        1
+      ],
+      [
+        "microsoft",
+        1
+      ],
+      [
+        "integration",
+        1
+      ]
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-0001",
+      "text": "The system must allow users to register with email and password",
+      "category": "functional",
+      "priority": "critical",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "system",
+        "allow",
+        "users",
+        "register",
+        "email",
+        "password"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN a valid user, WHEN credentials are submitted, THEN access is granted",
+        "GIVEN invalid credentials, WHEN login is attempted, THEN an error message is shown"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0001: Verify positive flow — The system must allow users to register with email and passw...",
+        "TC-REQ-0001-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0002",
+      "text": "Users should be able to login using SSO (Google, Microsoft) integration",
+      "category": "functional",
+      "priority": "high",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "users",
+        "able",
+        "login",
+        "using",
+        "sso",
+        "google",
+        "microsoft",
+        "integration"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN a valid user, WHEN credentials are submitted, THEN access is granted",
+        "GIVEN invalid credentials, WHEN login is attempted, THEN an error message is shown"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0002: Verify positive flow — Users should be able to login using SSO (Google, Microsoft) ...",
+        "TC-REQ-0002-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0003",
+      "text": "The admin dashboard shall display real-time analytics with charts and filters",
+      "category": "functional",
+      "priority": "medium",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "admin",
+        "dashboard",
+        "display",
+        "real",
+        "time",
+        "analytics",
+        "charts",
+        "filters"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN search criteria, WHEN submitted, THEN matching results are returned",
+        "GIVEN no matching data, WHEN searched, THEN a 'no results' message is shown"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0003: Verify positive flow — The admin dashboard shall display real-time analytics with c...",
+        "TC-REQ-0003-NEG: Verify negative/error handling",
+        "TC-REQ-0003-AUTH: Authorization check for different user roles"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0004",
+      "text": "The system must support role-based access control for Admin, Manager, and Tester roles",
+      "category": "functional",
+      "priority": "critical",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "system",
+        "support",
+        "role",
+        "based",
+        "access",
+        "control",
+        "admin",
+        "manager",
+        "tester",
+        "roles"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0004: Verify positive flow — The system must support role-based access control for Admin,...",
+        "TC-REQ-0004-NEG: Verify negative/error handling",
+        "TC-REQ-0004-AUTH: Authorization check for different user roles"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0005",
+      "text": "Testers should be able to create, update, and delete test cases with rich text descriptions",
+      "category": "functional",
+      "priority": "high",
+      "complexity": "low",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "testers",
+        "able",
+        "create",
+        "update",
+        "delete",
+        "test",
+        "cases",
+        "rich",
+        "text",
+        "descriptions"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN valid input data, WHEN the create action is performed, THEN a new record is saved",
+        "GIVEN invalid input, WHEN the create action is performed, THEN validation errors are displayed"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0005: Verify positive flow — Testers should be able to create, update, and delete test ca...",
+        "TC-REQ-0005-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0006",
+      "text": "The application must provide API endpoints for test case CRUD operations",
+      "category": "functional",
+      "priority": "critical",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "application",
+        "provide",
+        "api",
+        "endpoints",
+        "test",
+        "case",
+        "crud",
+        "operations"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0006: Verify positive flow — The application must provide API endpoints for test case CRU...",
+        "TC-REQ-0006-NEG: Verify negative/error handling",
+        "TC-REQ-0006-API: API contract and response validation"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0007",
+      "text": "Test execution results must be stored in a PostgreSQL database with full audit trail",
+      "category": "data",
+      "priority": "critical",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "test",
+        "execution",
+        "results",
+        "stored",
+        "postgresql",
+        "database",
+        "full",
+        "audit",
+        "trail"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0007: Verify positive flow — Test execution results must be stored in a PostgreSQL databa...",
+        "TC-REQ-0007-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0008",
+      "text": "The system should generate PDF and CSV export of test reports",
+      "category": "functional",
+      "priority": "high",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "system",
+        "generate",
+        "pdf",
+        "csv",
+        "export",
+        "test",
+        "reports"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN data to export, WHEN export is triggered, THEN a file is downloaded in the correct format"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0008: Verify positive flow — The system should generate PDF and CSV export of test report...",
+        "TC-REQ-0008-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0009",
+      "text": "The platform must send email notifications when test runs complete",
+      "category": "functional",
+      "priority": "critical",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "platform",
+        "send",
+        "email",
+        "notifications",
+        "when",
+        "test",
+        "runs",
+        "complete"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0009: Verify positive flow — The platform must send email notifications when test runs co...",
+        "TC-REQ-0009-NEG: Verify negative/error handling",
+        "TC-REQ-0009-BND: Boundary value testing for input fields",
+        "TC-REQ-0009-INV: Invalid input validation"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0010",
+      "text": "The UI must be responsive and work on mobile devices",
+      "category": "ui/ux",
+      "priority": "critical",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "responsive",
+        "work",
+        "mobile",
+        "devices"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0010: Verify positive flow — The UI must be responsive and work on mobile devices...",
+        "TC-REQ-0010-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0011",
+      "text": "The search functionality should allow filtering test cases by status, priority, and assignee",
+      "category": "functional",
+      "priority": "high",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "search",
+        "functionality",
+        "allow",
+        "filtering",
+        "test",
+        "cases",
+        "status",
+        "priority",
+        "assignee"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN a valid user, WHEN credentials are submitted, THEN access is granted",
+        "GIVEN invalid credentials, WHEN login is attempted, THEN an error message is shown"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0011: Verify positive flow — The search functionality should allow filtering test cases b...",
+        "TC-REQ-0011-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0012",
+      "text": "The system should integrate with Jira for automatic bug creation from failed test cases",
+      "category": "testing",
+      "priority": "high",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "system",
+        "integrate",
+        "jira",
+        "automatic",
+        "bug",
+        "creation",
+        "failed",
+        "test",
+        "cases"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0012: Verify positive flow — The system should integrate with Jira for automatic bug crea...",
+        "TC-REQ-0012-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0013",
+      "text": "Performance: The API response time must be under 200ms for 95th percentile",
+      "category": "non-functional",
+      "priority": "critical",
+      "complexity": "medium",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "performance",
+        "api",
+        "response",
+        "time",
+        "under",
+        "percentile"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0013: Verify positive flow — Performance: The API response time must be under 200ms for 9...",
+        "TC-REQ-0013-NEG: Verify negative/error handling",
+        "TC-REQ-0013-BND: Boundary value testing for input fields",
+        "TC-REQ-0013-INV: Invalid input validation",
+        "TC-REQ-0013-API: API contract and response validation"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0014",
+      "text": "All user passwords must be encrypted using bcrypt with minimum 12 rounds",
+      "category": "functional",
+      "priority": "critical",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "user",
+        "passwords",
+        "encrypted",
+        "using",
+        "bcrypt",
+        "minimum",
+        "rounds"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0014: Verify positive flow — All user passwords must be encrypted using bcrypt with minim...",
+        "TC-REQ-0014-NEG: Verify negative/error handling"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "REQ-0015",
+      "text": "The system should support concurrent test execution for up to 50 users",
+      "category": "functional",
+      "priority": "high",
+      "complexity": "high",
+      "source": "sample_requirements.txt",
+      "keywords": [
+        "system",
+        "support",
+        "concurrent",
+        "test",
+        "execution",
+        "users"
+      ],
+      "ambiguities": [],
+      "acceptance_criteria": [
+        "GIVEN the precondition is met, WHEN the action is performed, THEN the expected result occurs"
+      ],
+      "test_scenarios": [
+        "TC-REQ-0015: Verify positive flow — The system should support concurrent test execution for up t...",
+        "TC-REQ-0015-NEG: Verify negative/error handling",
+        "TC-REQ-0015-PERF: Concurrent usage / load test"
+      ],
+      "dependencies": []
+    }
+  ]
+}

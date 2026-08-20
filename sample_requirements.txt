@@ -1,0 +1,18 @@
+# Sample Requirements — E-Commerce QA Platform
+# Enter one requirement per line. Lines starting with # are comments.
+
+1. The system must allow users to register with email and password
+2. Users should be able to login using SSO (Google, Microsoft) integration
+3. The admin dashboard shall display real-time analytics with charts and filters
+4. The system must support role-based access control for Admin, Manager, and Tester roles
+5. Testers should be able to create, update, and delete test cases with rich text descriptions
+6. The application must provide API endpoints for test case CRUD operations
+7. Test execution results must be stored in a PostgreSQL database with full audit trail
+8. The system should generate PDF and CSV export of test reports
+9. The platform must send email notifications when test runs complete
+10. The UI must be responsive and work on mobile devices
+11. The search functionality should allow filtering test cases by status, priority, and assignee
+12. The system should integrate with Jira for automatic bug creation from failed test cases
+13. Performance: The API response time must be under 200ms for 95th percentile
+14. All user passwords must be encrypted using bcrypt with minimum 12 rounds
+15. The system should support concurrent test execution for up to 50 users
