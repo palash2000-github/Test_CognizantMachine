@@ -1,7 +1,0 @@
-{
-    "python.testing.pytestArgs": [
-        "google-test-project"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
-}
